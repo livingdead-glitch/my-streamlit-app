@@ -6,10 +6,35 @@ from openai import OpenAI
 # OpenAI 클라이언트 생성
 client = OpenAI()
 
+# AI 개인비서 에이블 화면 디자인 - 추가
+st.markdown("""
+<style>
+    .stApp {
+        background-color: #F4F7FC;
+    }
+
+    h1, h2, h3 {
+        color: #17365D;
+    }
+
+    div.stButton > button {
+        background-color: #2563EB;
+        color: white;
+        border-radius: 10px;
+        border: none;
+    }
+
+    div.stButton > button:hover {
+        background-color: #1D4ED8;
+        color: white;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # 페이지 설정
 st.set_page_config(page_title="음성 AI 서비스", page_icon="🤖", layout="wide")
-st.title("음성 인식 AI 서비스")
-st.write("음성으로 질문하시면 답변해 드립니다.")
+st.title("AI 개인비서 에이블")
+st.write("당신의 칼퇴 도움이, AI 비서 에이블이 도와드립니다.")
 
 # 역할 지정
 sys_role = """
