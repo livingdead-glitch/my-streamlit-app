@@ -1,0 +1,36 @@
+:root { --blue: #2563eb; --ink: #19345a; }
+.stApp { background: #f4f7fc; color: #243b58; }
+[data-testid="stHeader"] { background: transparent; }
+[data-testid="stMainBlockContainer"] { padding-top: 2.8rem; max-width: 1500px; padding-bottom: 3rem; }
+[data-testid="stSidebar"] { background: #fff; border-right: 1px solid #e7edf6; min-width: 250px; }
+[data-testid="stSidebar"] [data-testid="stRadio"] label { padding: 10px 8px; border-radius: 10px; }
+[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) { background: #eaf1ff; color: #2563eb; font-weight: 700; }
+.brand { color: #2563eb; font-size: 39px; font-weight: 850; letter-spacing: -2px; margin-bottom: 42px; }
+.brand span { display: block; font-size: 9px; letter-spacing: 2px; color: #8796ae; margin-top: 3px; }
+.sidebar-footer { margin-top: 50px; padding: 18px 0; color: #506681; font-size: 13px; border-top: 1px solid #edf1f7; }
+.sidebar-footer small { color: #8c9bb0; }
+.topbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e1e8f2; padding: 0 0 22px; margin-bottom: 28px; gap: 16px; }
+.topbar strong { font-size: 18px; color: #19345a; }
+.topbar span { font-size: 12px; color: #75859b; }
+h1 { color: #19345a; font-size: 1.9rem !important; letter-spacing: -1px; }
+h3 { color: #19345a; font-size: 1.1rem !important; }
+.stat-card { border: 1px solid #e7edf6; border-radius: 16px; background: #fff; padding: 22px; margin: 10px 0 25px; min-height: 190px; box-shadow: 0 3px 12px #24467704; }
+.stat-card p { color: #657891; margin: 12px 0 2px; font-size: 13px; }
+.stat-icon { float: right; background: #edf3ff; color: #2563eb; border-radius: 10px; padding: 6px 12px; font-size: 21px; }
+.stat-value { font-size: 34px; font-weight: 750; color: #19345a; margin-bottom: 10px; }
+.stat-value small { font-size: 14px; font-weight: 400; margin-left: 5px; color: #8b9bb0; }
+.muted { font-size: 11px; color: #8b9bb0; }
+.st-key-today_panel, .st-key-urgent_panel, .st-key-quick_panel, .st-key-schedule_panel { background: #fff; border-radius: 16px; border-color: #e7edf6 !important; }
+.schedule-row, .task-row { display: flex; align-items: center; gap: 18px; padding: 20px 0; border-bottom: 1px solid #edf1f7; font-size: 13px; }
+.schedule-row p, .task-row p { color: #8b9bb0; font-size: 12px; margin: 5px 0 0; }
+.time { color: #2563eb; font-weight: 700; font-size: 13px; }
+.badge { margin-left: auto; flex-shrink: 0; font-size: 11px; border-radius: 6px; background: #edf3ff; color: #4b76c9; padding: 5px 8px; }
+.urgent { color: #dc7852; background: #fff1e9; }
+.briefing { background: linear-gradient(120deg,#2563eb,#447ff1); border-radius: 16px; padding: 26px; color: #fff; margin-top: 16px; min-height: 225px; }
+.briefing h3 { color: white; margin: 12px 0; }
+.briefing p { color: #eff5ff; font-size: 14px; line-height: 1.9; }
+.briefing small { color: #dce9ff; font-size: 11px; }
+.eyebrow { letter-spacing: 2px; font-size: 10px; font-weight: 700; }
+.stButton > button { border-radius: 9px; border-color: #e0e8f4; color: #42618b; min-height: 43px; }
+.stButton > button:hover { border-color: #2563eb; color: #2563eb; background: #f0f5ff; }
+@media (max-width: 760px) { .topbar { flex-direction: column; align-items: flex-start; } .stat-card { min-height: 155px; margin-bottom: 8px; } .schedule-row { gap: 10px; } }
