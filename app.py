@@ -49,7 +49,7 @@ sys_role = """
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# 음성 비서 기능을 구분하기 위한 탭 생성 - 추
+# 음성 비서 기능을 구분하기 위한 탭 생성 - 추가
 tab1, tab2 = st.tabs(["🎙️ 음성 비서", "📅 업무 관리"])
 
 
