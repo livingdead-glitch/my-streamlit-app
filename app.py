@@ -69,3 +69,15 @@ if submit:
         # 응답 출력
         st.subheader("AI 답변")
         st.write(answer)
+
+        # TTS: AI 답변을 음성으로 변환 - AI가 생성한 텍스트 답변을 음성으로 변환
+        with st.spinner("음성 답변을 생성하고 있습니다..."):
+            speech = client.audio.speech.create(
+                model="tts-1",
+                voice="alloy",
+                input=answer
+            )
+
+        # 음성 답변 재생 - 생성된 음성을 사용자가 재생할 수 있도록 오디오 플레이어 제공
+        st.subheader("🔊 AI 음성 답변")
+        st.audio(speech.content, format="audio/mpeg")
