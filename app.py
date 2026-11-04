@@ -50,7 +50,7 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 # 음성 비서 기능을 구분하기 위한 탭 생성 - 추
-tab1 = st.tabs(["🎙️ 음성 비서"])[0]
+tab1, tab2 = st.tabs(["🎙️ 음성 비서", "📅 업무 관리"])
 
 
 # 음성 비서 기능을 첫 번째 탭에 배치
@@ -128,3 +128,16 @@ with tab1:
           # 음성 답변 재생 - 생성된 음성을 사용자가 재생할 수 있도록 오디오 플레이어 제공 - 추가
           st.subheader("🔊 AI 음성 답변")
           st.audio(speech.content, format="audio/mpeg")
+
+          # 업무 관리 탭 화면 구성 - 추가
+with tab2:
+    st.subheader("📅 에이블 업무 관리")
+    st.write("회의록을 분석하여 담당 업무와 마감일을 관리합니다.")
+
+     # 업무 분석을 위한 회의록 TXT 파일 업로드 - 추가
+    meeting_file = st.file_uploader("📄 회의록을 업로드하세요", type=["txt"], key="meeting_file")
+
+    # 업로드한 회의록을 텍스트로 변환
+    if meeting_file is not None:
+        meeting_text = meeting_file.getvalue().decode("utf-8")
+        st.success("✅ 회의록 업로드 완료!")
