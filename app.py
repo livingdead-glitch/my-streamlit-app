@@ -6,6 +6,9 @@ from openai import OpenAI
 # OpenAI 클라이언트 생성
 client = OpenAI()
 
+# 페이지 설정 - 웹 브라우저에 표시할 제목, 아이콘, 화면 너비 지정
+st.set_page_config(page_title="음성 AI 서비스", page_icon="🤖", layout="wide")
+
 # AI 개인비서 에이블 화면 디자인 - 추가
 st.markdown("""
 <style>
@@ -31,8 +34,8 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# 페이지 설정
-st.set_page_config(page_title="음성 AI 서비스", page_icon="🤖", layout="wide")
+# AI 개인비서 에이블의 제목 및 소개 문구 변경
+# 기존 '음성 인식 AI 서비스'를 프로젝트 이름에 맞게 수정
 st.title("AI 개인비서 에이블")
 st.write("당신의 칼퇴 도움이, AI 비서 에이블이 도와드립니다.")
 
