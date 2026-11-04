@@ -54,8 +54,14 @@ if submit:
     st.subheader("🎙️ 음성 인식 결과")
     st.info(transcript.text)
 
-    # 사용자 메시지
-    input_messages.append({"role": "user", "content": transcript.text})
+    
+
+    # 멀티턴 대화 - 사용자 질문을 대화 기록에 저장 - 교체
+    st.session_state.messages.append({"role": "user","content": transcript.text})
+
+    # 이전 대화 기록을 AI에게 전달 - 교체
+    input_messages.extend(st.session_state.messages)
+
 
     # LLM 호출 및 응답 듣기
     with st.spinner("답변을 준비하고 있습니다..."):
@@ -66,11 +72,17 @@ if submit:
         )
         answer = response.output_text
 
+        # 멀티턴 대화 - AI 답변을 대화 기록에 저장 - 교체
+        st.session_state.messages.append({"role": "assistant","content": answer})
+
+        # 최근 대화 기록 10개만 유지 - 추가
+        st.session_state.messages = st.session_state.messages[-10:]
+
         # 응답 출력
         st.subheader("AI 답변")
         st.write(answer)
 
-        # TTS: AI 답변을 음성으로 변환 - AI가 생성한 텍스트 답변을 음성으로 변환
+        # TTS: AI 답변을 음성으로 변환 - AI가 생성한 텍스트 답변을 음성으로 변환 - 추가
         with st.spinner("음성 답변을 생성하고 있습니다..."):
             speech = client.audio.speech.create(
                 model="tts-1",
@@ -78,6 +90,6 @@ if submit:
                 input=answer
             )
 
-        # 음성 답변 재생 - 생성된 음성을 사용자가 재생할 수 있도록 오디오 플레이어 제공
+        # 음성 답변 재생 - 생성된 음성을 사용자가 재생할 수 있도록 오디오 플레이어 제공 - 추가
         st.subheader("🔊 AI 음성 답변")
         st.audio(speech.content, format="audio/mpeg")
