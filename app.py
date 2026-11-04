@@ -49,6 +49,10 @@ if submit:
     transcript = client.audio.transcriptions.create(
         model="whisper-1",
         file=("audio.wav", audio_value, "audio/wav"))
+    
+    # STT 음성 인식 결과 출력 - 사용자가 음성으로 질문했을 때 AI가 인식한 문장을 화면에서 확인 - 추가
+    st.subheader("🎙️ 음성 인식 결과")
+    st.info(transcript.text)
 
     # 사용자 메시지
     input_messages.append({"role": "user", "content": transcript.text})
