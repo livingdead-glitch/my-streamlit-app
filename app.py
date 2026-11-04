@@ -56,7 +56,7 @@ with st.form("task_form"):
     submitted = st.form_submit_button("실행", type="primary")
 
 # 버튼을 눌렀을 때만 실행
-if submit:
+if submitted:
     # 업로드 된 파일이 있으면 디코딩
     text = ""
     if uploaded_file is not None:
