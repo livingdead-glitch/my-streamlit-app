@@ -1,0 +1,17 @@
+﻿{
+    "source_commit":  "73ba927e6c8bc2249e5776e6b51010c64699a27b",
+    "files":  [
+                  {
+                      "file":  "app.py",
+                      "sha256":  "9417899BAC34BA1A68EC038729F66D3468FE7BA8FD5267D865559F512C2D29E6"
+                  },
+                  {
+                      "file":  "requirements.txt",
+                      "sha256":  "D89FC43F9E67F6A8EE549654506A138FEB872CEB101B85BCBAFF1C0BFCBD4301"
+                  },
+                  {
+                      "file":  "README.md",
+                      "sha256":  "DA8B32F7BBE49CE04BA1573A46C28842D33D3721998754E75378FFCE6DDC317E"
+                  }
+              ]
+}

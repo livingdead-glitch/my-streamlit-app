@@ -1,5 +1,4 @@
 """Notebook-compatible PDF → chunks → OpenAI embeddings → Chroma → RAG."""
-import tempfile
 from pathlib import Path
 from uuid import uuid4
 
@@ -11,23 +10,19 @@ from langchain_pymupdf4llm import PyMuPDF4LLMLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
-def build_index(files, *, api_key=None):
+def build_index(pdf_paths, *, api_key=None):
+    """Read (original filename, temporary PDF path) pairs before paths expire."""
     documents = []
-    with tempfile.TemporaryDirectory() as directory:
-        for number, (name, content) in enumerate(files):
-            if not content.startswith(b"%PDF-"):
-                raise ValueError(f"{name}: 올바른 PDF 파일이 아닙니다.")
-            path = Path(directory) / f"document_{number}.pdf"
-            path.write_bytes(content)
-            loaded = PyMuPDF4LLMLoader(str(path)).load()
-            for doc in loaded:
-                doc.metadata["source"] = Path(name).name
-                # Chroma metadata accepts scalar values only.
-                doc.metadata = {
-                    k: v for k, v in doc.metadata.items()
-                    if isinstance(v, (str, int, float, bool))
-                }
-            documents.extend(loaded)
+    for name, path in pdf_paths:
+        loaded = PyMuPDF4LLMLoader(str(path)).load()
+        for doc in loaded:
+            doc.metadata["source"] = Path(name).name
+            # Chroma metadata accepts scalar values only.
+            doc.metadata = {
+                k: v for k, v in doc.metadata.items()
+                if isinstance(v, (str, int, float, bool))
+            }
+        documents.extend(loaded)
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=500, chunk_overlap=100,
         separators=["\n\n", "\n", ".", " ", ""],
@@ -56,15 +51,8 @@ def source_label(doc):
     return label
 
 
-def rag_pipeline(store, question, history, *, api_key=None):
-    # Include recent questions to give follow-up searches basic context.
-    recent = [m["content"] for m in history if m["role"] == "user"][-2:]
-    query = "\n".join(recent + [question])
-    docs = store.as_retriever(search_kwargs={"k": 3}).invoke(query)
-    context = "\n\n".join(
-        f"[{i}] {source_label(doc)}\n{doc.page_content}"
-        for i, doc in enumerate(docs, 1)
-    )
+def build_rag_chain(store, *, api_key=None):
+    """Create retrieval and generation resources once per uploaded document set."""
     prompt = ChatPromptTemplate.from_messages([
         ("system", "당신은 친절하고 명확한 AIVLE School 학습 도우미입니다. "
          "업로드 문서의 아래 검색 결과에 있는 사실만 근거로 한국어로 답하세요. "
@@ -79,9 +67,27 @@ def rag_pipeline(store, question, history, *, api_key=None):
         model="gpt-4o-mini", temperature=0, streaming=True, api_key=api_key,
         timeout=60, max_retries=2,
     ) | StrOutputParser()
+    return store.as_retriever(search_kwargs={"k": 3}), chain
+
+
+def rag_pipeline(retriever, chain, question, history):
+    # Reuse the resources; only retrieval and generation run for each question.
+    recent = [m["content"] for m in history if m["role"] == "user"][-2:]
+    query = "\n".join(recent + [question])
+    context, sources = retrieve_context(retriever, query)
     stream = chain.stream({
         "context": context, "input": question,
         "history": [(m["role"], m["content"]) for m in history[-10:]],
     })
-    sources = [{"label": source_label(d), "text": d.page_content} for d in docs]
     return stream, sources
+
+
+def retrieve_context(retriever, query):
+    """Share the existing document retriever across chat, coaching and quizzes."""
+    docs = retriever.invoke(query)
+    context = "\n\n".join(
+        f"[{i}] {source_label(doc)}\n{doc.page_content}"
+        for i, doc in enumerate(docs, 1)
+    )
+    sources = [{"label": source_label(d), "text": d.page_content} for d in docs]
+    return context, sources
