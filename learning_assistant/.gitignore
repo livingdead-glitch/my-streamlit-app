@@ -1,0 +1,10 @@
+# Keep the placeholder while ignoring credentials and local artifacts.
+.env
+.env.*
+!.env.example
+.venv/
+__pycache__/
+*.py[cod]
+.streamlit/secrets.toml
+api_key.txt
+chroma_db/

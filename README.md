@@ -1,50 +1,44 @@
-# AI 개인비서 에이블
+﻿# AIVLE School 학습 도우미
 
-Streamlit 기반 개인 업무 대시보드와 음성 비서입니다. 업무·일정·사용자·브리핑은 **예시 데이터**이며 저장되거나 외부 서비스와 동기화되지 않습니다.
+PDF 기반 RAG 채팅, 초급·중급·고급 AI 학습 코치, 문서 기반 4지선다 이해도 문제를 제공합니다. [기능 설명](learning_assistant/README.md)을 참고하세요.
 
-## 실행
+## 기존 Streamlit Cloud 앱 전환 준비
 
-Python 3.12 환경에서 저장소 루트를 작업 디렉터리로 사용합니다.
+현재 변경은 `feature/aivle-project4` 작업 트리에 준비한 상태입니다. main에 반영하지 않았으므로 기존 배포 앱은 바뀌지 않습니다.
 
-```bash
-python3 -m venv /workspace/venvs/my-streamlit-app
-/workspace/venvs/my-streamlit-app/bin/python -m pip install -r requirements.txt
-/workspace/venvs/my-streamlit-app/bin/python -m streamlit run app.py --server.headless=true --browser.gatherUsageStats=false
+기존 앱을 삭제하거나 새로 생성하지 않고 향후 검토된 변경을 main에 반영합니다. 배포 설정과 웹주소는 유지합니다.
+
+| 항목 | 유지할 설정 |
+| --- | --- |
+| Repository | `livingdead-glitch/my-streamlit-app` |
+| Branch | `main` |
+| Main file path | `app.py` |
+| App URL | 기존 URL 유지 |
+| Secrets | 기존 최상위 `OPENAI_API_KEY` 사용 |
+| Python | 기존 Cloud 설정 유지; 검증 한계는 아래 기록 참고 |
+
+루트 `app.py`는 `runpy.run_path`로 `learning_assistant/app.py`를 매번 실행합니다. Streamlit 재실행마다 화면 코드를 실행하며 인덱스·검색기·채팅·코치·문제 상태는 `st.session_state`에서 유지합니다. 메뉴 전환이나 같은 PDF에 대한 후속 질문으로 다시 벡터화하지 않습니다. PDF 교체·제거 시 관련 학습 상태를 초기화합니다.
+
+루트 `requirements.txt`는 `-r learning_assistant/requirements.txt`를 참조합니다. 기존 고정 버전과 `python-dotenv`를 포함한 하위 앱의 의존성을 설치합니다. [Streamlit 의존성 탐색 규칙](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/app-dependencies).
+
+기존 Cloud Secrets의 최상위 `OPENAI_API_KEY`를 사용합니다. 환경변수를 우선 확인하고 이후 `st.secrets`를 읽습니다. 로컬에서는 선택적으로 `learning_assistant/.env`를 사용하며 기존 환경변수를 덮어쓰지 않습니다. 실제 키나 `.env`, `.streamlit/secrets.toml`은 Git에 추가하지 않습니다. 키 재발급이나 Secrets 복사는 필요하지 않습니다. 실제 Cloud 설정 내용은 이번에 조회하거나 변경하지 않았습니다.
+
+Cloud는 저장소 루트에서 실행하므로 루트 `.streamlit/config.toml`을 그대로 사용합니다. 하위 앱의 설정 파일은 그 폴더에서 로컬 실행할 때 적용됩니다. PDF 합계 30MB 제한은 앱 코드에서 적용됩니다.
+
+## 기존 환경에서 실행
+
+이미 패키지가 준비된 Python 환경에서 저장소 루트를 작업 디렉터리로 사용합니다.
+
+```powershell
+python -m streamlit run app.py
 ```
 
-API 키 없이 대시보드와 모든 메뉴를 열 수 있습니다. 음성 비서만 키가 필요합니다. `OPENAI_API_KEY` 환경변수 또는 Streamlit Secrets의 같은 이름 항목에서 읽습니다. 실제 키를 소스·로그·Git에 기록하지 마세요. 로컬 Secrets를 쓸 경우 `.streamlit/secrets.toml`은 Git에서 제외됩니다. 키 입력 UI는 제공하지 않습니다.
+하위 진입점 `python -m streamlit run learning_assistant/app.py`도 계속 사용할 수 있습니다. 이번 배포 준비에서는 Python 설치나 추가 환경 구축을 하지 않습니다.
 
-## 화면
+## 복구와 검증
 
-- 대시보드: 업무 카드 4종, 오늘의 일정, 마감 임박 목록, 예시 브리핑, 빠른 실행
-- 나의 업무: 예시 목록 및 상태 필터 (추가·편집은 준비 중)
-- 일정 관리: 오늘의 예시 일정 (추가·편집은 준비 중)
-- 음성 비서: 참고 TXT와 녹음 입력 → STT → 답변 → TTS, 최근 10개 메시지 유지, 대화 초기화
-- 회의록: UTF-8 TXT 업로드 및 미리보기 (AI 분석은 준비 중)
-- 설정: 준비 중
+기존 루트 파일은 [legacy/main-73ba927](legacy/main-73ba927/)에 원본 그대로 보존했습니다. [복구 절차](legacy/main-73ba927/RECOVERY.md)에 기준 커밋과 복구 명령을 기록했습니다. `chroma_db`, `data`, 기존 테스트·스타일·설정은 보존하며 새 앱은 기존 DB를 변경하지 않습니다.
 
-## 기존 코드 분석과 수정
+[검증 기록](learning_assistant/VALIDATION.md)을 참고하세요. 이번에는 실행 진입점의 위임 동작, 소스 구문, 의존성 참조 경로와 원본 백업을 검사합니다. 실제 Cloud 재배포·Secrets 인증·OpenAI 응답은 수행하지 않습니다. 기존 `tests/test_app.py`는 과거 대시보드용이며 새 앱의 인수 검증으로 간주하지 않습니다.
 
-기존 코드는 파일 최상단에서 OpenAI 클라이언트를 생성해 키가 없으면 화면 전체가 실패했습니다. 또한 제출 조건 밖에 놓인 음성 처리 코드와 `st.stop()` 때문에 첫 렌더링에서 실행이 중단되고 업무 관리 탭 내용이 표시되지 않았습니다. 참고 파일 처리도 제출 조건과 분리돼 변수가 초기화되지 않을 가능성이 있었습니다.
-
-클라이언트와 API 호출을 음성 폼 제출 이후로 옮기고 들여쓰기 및 조건을 정리했습니다. 화면은 기능별 함수로 분리하고 사용하지 않는 base64/json/requests import와 중복 주석을 제거했습니다. 기존 모델(`whisper-1`, `gpt-4o-mini`, `tts-1` / `alloy`), 참고 TXT 전달, 멀티턴 대화, 음성 출력은 유지했습니다. 답변 생성 실패 시 대화 기록을 변경하지 않고, TTS만 실패하면 텍스트 답변을 보존합니다. SDK 오류 원문은 화면에 노출하지 않습니다.
-
-## 테스트
-
-```bash
-/workspace/venvs/my-streamlit-app/bin/python -m unittest discover -s tests -v
-/workspace/venvs/my-streamlit-app/bin/python -m pip check
-```
-
-UI 테스트는 키 없는 모든 메뉴, 빠른 이동, 업무 필터, 실행 비활성화, 녹음 누락, 회의록 미리보기와 인코딩 오류를 확인합니다. 음성 처리 테스트는 OpenAI 클라이언트를 모의 객체로 대체하여 STT·답변·TTS 연결, 멀티턴 이력 제한, TTS 실패 후 텍스트 보존을 검증합니다. **실제 API 요청은 보내지 않습니다.**
-
-실제 마이크 권한/녹음, OpenAI 인증 및 모델 응답, 생성 음성 재생 품질은 별도 통합 검증 대상입니다. 첨부 디자인 이미지가 대화에 전달되지 않아 요청에 나열된 요소와 색상을 기준으로 구현했습니다.
-
-## 변경 검토
-
-```bash
-git diff -- app.py README.md
-git status --short
-```
-
-추가 파일 `style.css`, `.streamlit/config.toml`, `tests/test_app.py`, `.gitignore`도 함께 검토하세요. UI 변경은 `feature/able-dashboard-ui` 브랜치에서 검토합니다. 기존 `main` 코드는 유지합니다.
+이번 준비 작업에는 commit, main 병합, push 또는 Cloud 설정 변경이 포함되지 않습니다. 향후 main 반영 시 기존 앱 재배포와 사용자 세션 초기화가 발생할 수 있습니다.
